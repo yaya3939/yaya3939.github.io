@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>message demo</title>
+<style>
+ul {
+list-style-type: none;
+padding: 0;
+}
+
+    li {
+        margin-bottom: 10px;
+    }
+</style>
+
+</head>
+<body>
+
+<h1>message record</h1>
+<button id="returnButton">to app</button>
+<button id="historyBtn">to history</button>
+<ul id="messageList"></ul>
+
+<script>
+
+          document
+        .getElementById("returnButton")
+        .addEventListener("click", function () {
+          // // 创建 Custom Tabs Intent
+          // var intent = new Intent();
+          // intent.setAction("android.intent.action.VIEW");
+          // intent.addCategory("android.intent.category.BROWSABLE");
+
+          // // 设置启动 URL 为你的原生应用的 URL
+          // intent.setData(Uri.parse("app_scheme://return"));
+
+          // // 启动 Custom Tabs
+          // var options = new Bundle();
+          // var customTabsIntent = new CustomTabsIntent.Builder().build();
+          // customTabsIntent.intent.setPackage("com.example.myapplication");
+          // customTabsIntent.launchUrl(
+          //   yourActivityContext,
+          //   Uri.parse("app_scheme://return")
+          // );
+
+            window.close();
+        });
+
+        document
+        .getElementById("historyBtn")
+        .addEventListener("click", function () {
+            window.location.href = "./history.html";
+        })
+
+    window.addEventListener('message', handleMessage(event));
+
+    function handleMessage(event) {
+
+        // We are receiveing messages from any origin, you can check of the origin by
+        // using event.origin
+
+        // get the port then use it for communication.
+        var port = event.ports[0];
+        if (typeof port === 'undefined') return;
+
+        // Post message on this port.
+        port.postMessage("Test port");
+
+        // Receive upcoming messages on this port.
+        port.onmessage = function(event) {
+            // get data
+            let messageData;
+            try {
+                messageData = JSON.parse(event.data);
+            } catch (error) {
+                console.error('error: '+error);
+                port.postMessage("failed to get message");
+                return;
+            }
+
+            console.log("[PostMessage1] Got message" + messageData);
+
+            recordNumbers(messageData)
+            port.postMessage("success record")
+        };
+
+       
+    }
+
+    function recordNumbers(number) {
+        const messageList = document.getElementById('messageList');
+
+        const listItem = document.createElement('li');
+        listItem.textContent = number;
+        messageList.appendChild(listItem);
+    }
+
+</script>
+
+</body>
+</html>
